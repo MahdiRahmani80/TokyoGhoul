@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import mx.ma3r.tokyogoul.R
@@ -41,6 +42,20 @@ fun SplashScreen(navController: NavController, delaySplash: Long = 2500L) {
         contentDescription = "splash bg",
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize()
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.Companion.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.background.copy(0.5f),
+                        MaterialTheme.colorScheme.background.copy(0.08f),
+                        MaterialTheme.colorScheme.background.copy(0.5f)
+                    )
+                )
+            )
     )
 
     Column(
@@ -66,7 +81,7 @@ fun SplashScreen(navController: NavController, delaySplash: Long = 2500L) {
         ) {
 
             Text(
-                text = "توکیو غول ",
+                text = stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.headlineMedium,
             )
         }

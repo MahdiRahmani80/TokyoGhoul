@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TokyoGoul</string>
+    <string name="chapter">Chapters</string>
+    <string name="lastWatch">Your last watch ...</string>
+    <string name="ch1">Chapter One</string>
+    <string name="ch2">Chapter Two</string>
+    <string name="ch3">Chapter Three</string>
+    <string name="ch4">Chapter Four</string>
 </resources>
