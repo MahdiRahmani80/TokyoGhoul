@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,63 +31,74 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import mx.ma3r.tokyogoul.Background
 import mx.ma3r.tokyogoul.R
 import mx.ma3r.tokyogoul.model.Chapter
 import mx.ma3r.tokyogoul.navigation.Screen
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
 import mx.ma3r.tokyogoul.screen.home.HomeViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChapterScreen(navController: NavHostController, chapter: Chapter, share: SharedViewModel) {
 
     val chapterName = stringResource(chapter.name)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Scaffold(topBar = {
 
         Text(
             text = chapterName,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(25.dp, 25.dp, 10.dp, 0.dp),
-            style = MaterialTheme.typography.titleMedium
+                .padding(15.dp),
+            style = MaterialTheme.typography.titleLarge
         )
 
-        Box(
+    }) { paddingValues ->
+
+        Background()
+
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(260.dp)
-                .padding(15.dp)
-                .clip(RoundedCornerShape(15.dp))
-                .background(MaterialTheme.colorScheme.tertiary),
-            contentAlignment = Alignment.BottomStart
+                .fillMaxSize()
+                .padding(paddingValues.apply { 1.dp })
         ) {
 
-            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxSize()) {
-                Icon(
-                    painterResource(id = R.drawable.baseline_play_circle_outline_24),
-                    "play",
-                    tint = MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier.size(60.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(260.dp)
+                    .padding(15.dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colorScheme.tertiary),
+                contentAlignment = Alignment.BottomStart
+            ) {
+
+                IconButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxSize()) {
+                    Icon(
+                        painterResource(id = R.drawable.baseline_play_circle_outline_24),
+                        "play",
+                        tint = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+
+                Text(
+                    text = stringResource(id = R.string.trailer) + " $chapterName",
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .padding(12.dp, 5.dp),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
                 )
+
             }
 
-            Text(
-                text = stringResource(id = R.string.trailer) + " $chapterName",
-                modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .padding(12.dp, 5.dp),
-                style = MaterialTheme.typography.titleSmall,
-                fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
-            )
-
+            MovieLazyCol(navController, share)
         }
-
-        MovieLazyCol(navController,share)
     }
+
 }
 
 
@@ -98,9 +110,11 @@ fun MovieLazyCol(
 ) {
 
 
-    LazyColumn(modifier = Modifier
-        .fillMaxSize()
-        .padding(10.dp, 5.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp, 5.dp)
+    ) {
         items(share.currentChapter.episodes.size) { index ->
 
             Card(modifier = Modifier

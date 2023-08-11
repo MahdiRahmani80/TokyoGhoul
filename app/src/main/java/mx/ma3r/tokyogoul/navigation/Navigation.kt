@@ -39,7 +39,7 @@ fun Navigation() {
             ChapterScreen(navController,sharedViewModel.currentChapter,sharedViewModel)
         }
         composable(Screen.Movie.route) {
-            MovieSingleScreen(navController, sharedViewModel.currentChapter ,sharedViewModel.currentMovie)
+            MovieSingleScreen(navController, sharedViewModel.currentChapter ,sharedViewModel.currentMovie,sharedViewModel)
         }
         composable(Screen.ChatSection.route) {
         }

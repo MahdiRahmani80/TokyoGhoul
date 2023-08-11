@@ -9,4 +9,6 @@
     <string name="trailer">Trailer</string>
     <string name="chatSection">Chat Section</string>
     <string name="commentPlaceHolder">Leave a message</string>
+    <string name="lastEpisode">Last Episode</string>
+    <string name="nextEpisode">Next Episode</string>
 </resources>

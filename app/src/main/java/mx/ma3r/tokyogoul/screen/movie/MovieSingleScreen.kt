@@ -2,24 +2,22 @@ package mx.ma3r.tokyogoul.screen.movie
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,8 +28,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,34 +37,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.InspectableModifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import mx.ma3r.tokyogoul.Background
 import mx.ma3r.tokyogoul.R
 import mx.ma3r.tokyogoul.model.Chapter
 import mx.ma3r.tokyogoul.model.Movie
-import mx.ma3r.tokyogoul.screen.home.ChaptersLazyCol
+import mx.ma3r.tokyogoul.navigation.Screen
+import mx.ma3r.tokyogoul.navigation.SharedViewModel
 import mx.ma3r.tokyogoul.screen.home.TopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieSingleScreen(navController: NavController, chapter: Chapter, movie: Movie) {
+fun MovieSingleScreen(
+    navController: NavController,
+    chapter: Chapter,
+    movie: Movie,
+    share: SharedViewModel
+) {
 
     Scaffold(topBar = { TopBar() }) { paddingValues ->
+
+        Background()
 
         Column(
             modifier = Modifier
@@ -106,6 +103,44 @@ fun MovieSingleScreen(navController: NavController, chapter: Chapter, movie: Mov
 
             }
 
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(30.dp, 0.dp)
+            ) {
+
+                if (movie.id != 1)
+                    Text(
+                        text = stringResource(id = R.string.lastEpisode),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            share.setMovie(chapter.episodes[movie.id - 2])
+                            navController.navigate(Screen.Movie.route) {
+                                popUpTo(Screen.Movie.route) {
+                                    inclusive = true
+                                }
+                            }
+                        })
+
+                if (movie.id != chapter.episodes.size)
+                    Text(
+                        text = stringResource(id = R.string.nextEpisode),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable {
+                            share.setMovie(chapter.episodes[movie.id ])
+                            navController.navigate(Screen.Movie.route) {
+                                popUpTo(Screen.Movie.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = stringResource(R.string.chatSection),

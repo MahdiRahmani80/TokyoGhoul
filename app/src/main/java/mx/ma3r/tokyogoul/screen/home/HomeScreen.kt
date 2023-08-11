@@ -1,10 +1,12 @@
 package mx.ma3r.tokyogoul.screen.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,10 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import mx.ma3r.tokyogoul.Background
 import mx.ma3r.tokyogoul.R
 import mx.ma3r.tokyogoul.navigation.Screen
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
@@ -41,6 +45,8 @@ fun HomeScreen(navController: NavController, share: SharedViewModel) {
     val homeViewModel = koinViewModel<HomeViewModel>()
 
     Scaffold(topBar = { TopBar() }) { paddingValues ->
+
+        Background()
 
         Column(
             modifier = Modifier
@@ -129,9 +135,11 @@ fun ChaptersLazyCol(
 ) {
 
 
-    LazyColumn(modifier = Modifier
-        .fillMaxSize()
-        .padding(10.dp, 5.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp, 5.dp)
+    ) {
         items(vm.chapters.value.size) { index ->
 
             Card(modifier = Modifier
