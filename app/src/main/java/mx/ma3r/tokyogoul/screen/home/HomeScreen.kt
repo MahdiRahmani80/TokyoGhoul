@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,10 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import mx.ma3r.tokyogoul.R
-import mx.ma3r.tokyogoul.model.Chapter
 import mx.ma3r.tokyogoul.navigation.Screen
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -47,12 +42,16 @@ fun HomeScreen(navController: NavController, share: SharedViewModel) {
 
     Scaffold(topBar = { TopBar() }) { paddingValues ->
 
-        Column(modifier = Modifier.padding(paddingValues.apply { 10.dp })) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues.apply { 10.dp })
+        ) {
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.3f)
+                    .height(230.dp)
                     .padding(15.dp)
                     .clip(RoundedCornerShape(15.dp))
                     .background(MaterialTheme.colorScheme.tertiary),
@@ -88,11 +87,7 @@ fun HomeScreen(navController: NavController, share: SharedViewModel) {
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
-
-            ChaptersLazyCol(navController, homeViewModel.chapters.value){chapter->
-                share.setChapter(chapter)
-                navController.navigate(Screen.Chapter.route)
-            }
+            ChaptersLazyCol(navController, homeViewModel, share)
 
         }
 
@@ -129,25 +124,28 @@ fun TopBar() {
 @Composable
 fun ChaptersLazyCol(
     navController: NavController,
-    chapters: List<Chapter>,
-    itemClick: (ch: Chapter) -> Unit
+    vm: HomeViewModel,
+    share: SharedViewModel
 ) {
 
-    LazyColumn(modifier = Modifier.padding(10.dp, 5.dp)) {
-        items(chapters.size) { index ->
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
+    LazyColumn(modifier = Modifier
+        .fillMaxSize()
+        .padding(10.dp, 5.dp)) {
+        items(vm.chapters.value.size) { index ->
+
+            Card(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
                 onClick = {
-                    itemClick(chapters[index])
-                }
-            ) {
+
+                    share.setChapter(vm.chapters.value[index])
+                    navController.navigate(Screen.Chapter.route)
+                }) {
 
                 Text(
-                    text = stringResource(chapters[index].name),
+                    text = stringResource(vm.chapters.value[index].name),
                     color = MaterialTheme.colorScheme.onTertiary,
                     modifier = Modifier.padding(12.dp, 8.dp)
                 )

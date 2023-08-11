@@ -5,10 +5,10 @@ import mx.ma3r.tokyogoul.model.Movie
 
 const val DELAY_SPLASH_SCREEN = 2800L
 
-val movie = Movie("S01E01","https://...")
+val movie = Movie("S01E01", "https://...")
 val CHAPTERS = listOf(
-    Chapter(R.string.ch1, listOf(movie, movie, movie, movie, movie, movie, movie)),
-    Chapter(R.string.ch2,listOf(movie, movie, movie, movie, movie, movie, movie)),
-    Chapter(R.string.ch3,listOf(movie, movie, movie, movie, movie, movie, movie)),
-    Chapter(R.string.ch4,listOf(movie, movie, movie, movie, movie, movie, movie)),
+    Chapter(R.string.ch1, listOf(movie, movie.copy(name = "S01E02"), movie.copy(name = "S01E03"), movie.copy(name = "S01E04"), movie.copy(name = "S01E05"), movie.copy(name = "S01E06"), movie.copy(name = "S01E07"),movie, movie, movie, movie,)),
+    Chapter(R.string.ch2, listOf(movie, movie, movie, movie, movie, movie, movie)),
+    Chapter(R.string.ch3, listOf(movie, movie, movie, movie, movie, movie, movie)),
+    Chapter(R.string.ch4, listOf(movie, movie, movie, movie, movie, movie, movie)),
 )

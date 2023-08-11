@@ -17,7 +17,7 @@ class App:Application() {
         val myModules = module {
 
             viewModel{ HomeViewModel()}
-            viewModel{ SharedViewModel()}
+            single{ SharedViewModel()}
         }
 
         startKoin {

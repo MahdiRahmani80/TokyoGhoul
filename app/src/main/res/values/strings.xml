@@ -6,4 +6,7 @@
     <string name="ch2">Chapter Two</string>
     <string name="ch3">Chapter Three</string>
     <string name="ch4">Chapter Four</string>
+    <string name="trailer">Trailer</string>
+    <string name="chatSection">Chat Section</string>
+    <string name="commentPlaceHolder">Leave a message</string>
 </resources>

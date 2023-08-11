@@ -10,7 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import mx.ma3r.tokyogoul.DELAY_SPLASH_SCREEN
 import mx.ma3r.tokyogoul.model.Chapter
+import mx.ma3r.tokyogoul.screen.chapter.ChapterScreen
 import mx.ma3r.tokyogoul.screen.home.HomeScreen
+import mx.ma3r.tokyogoul.screen.movie.MovieSingleScreen
 import mx.ma3r.tokyogoul.screen.splash.SplashScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -34,8 +36,10 @@ fun Navigation() {
         composable(Screen.Gallery.route) {
         }
         composable(Screen.Chapter.route) {
+            ChapterScreen(navController,sharedViewModel.currentChapter,sharedViewModel)
         }
         composable(Screen.Movie.route) {
+            MovieSingleScreen(navController, sharedViewModel.currentChapter ,sharedViewModel.currentMovie)
         }
         composable(Screen.ChatSection.route) {
         }
