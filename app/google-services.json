@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "725463098019",
+    "project_id": "tokyogoul-c9af5",
+    "storage_bucket": "tokyogoul-c9af5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:725463098019:android:0ab6c3c805657910421516",
+        "android_client_info": {
+          "package_name": "mx.ma3r.tokyogoul"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "725463098019-vnmn130kae79phdi8adq4jsl79i7ssjm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpncnKlBLUtvp40wl0tLNacl1QL4ki0hk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "725463098019-vnmn130kae79phdi8adq4jsl79i7ssjm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
