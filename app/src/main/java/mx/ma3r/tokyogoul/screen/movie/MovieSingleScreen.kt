@@ -1,8 +1,12 @@
 package mx.ma3r.tokyogoul.screen.movie
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,39 +33,55 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mx.ma3r.tokyogoul.Background
 import mx.ma3r.tokyogoul.R
 import mx.ma3r.tokyogoul.model.Chapter
+import mx.ma3r.tokyogoul.model.Chat
 import mx.ma3r.tokyogoul.model.Movie
 import mx.ma3r.tokyogoul.navigation.Screen
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
 import mx.ma3r.tokyogoul.screen.home.TopBar
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieSingleScreen(
     navController: NavController,
     chapter: Chapter,
-    movie: Movie,
     share: SharedViewModel
 ) {
+
+    val movieViewModel = koinViewModel<MovieViewModel>()
+
+    movieViewModel.setMovie(share.currentMovie)
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(topBar = { TopBar() }) { paddingValues ->
 
@@ -93,7 +113,7 @@ fun MovieSingleScreen(
                 }
 
                 Text(
-                    text = movie.name,
+                    text = share.currentMovie.name,
                     modifier = Modifier
                         .fillMaxWidth(1f)
                         .padding(12.dp, 5.dp),
@@ -109,33 +129,25 @@ fun MovieSingleScreen(
                     .padding(30.dp, 0.dp)
             ) {
 
-                if (movie.id != 1)
+                if (share.currentMovie.id != 1)
                     Text(
                         text = stringResource(id = R.string.lastEpisode),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.secondary,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.clickable {
-                            share.setMovie(chapter.episodes[movie.id - 2])
-                            navController.navigate(Screen.Movie.route) {
-                                popUpTo(Screen.Movie.route) {
-                                    inclusive = true
-                                }
-                            }
+                            share.setMovie(chapter.episodes[share.currentMovie.id - 2])
+                            movieViewModel.setMovie(share.currentMovie)
                         })
 
-                if (movie.id != chapter.episodes.size)
+                if (share.currentMovie.id != chapter.episodes.size)
                     Text(
                         text = stringResource(id = R.string.nextEpisode),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable {
-                            share.setMovie(chapter.episodes[movie.id ])
-                            navController.navigate(Screen.Movie.route) {
-                                popUpTo(Screen.Movie.route) {
-                                    inclusive = true
-                                }
-                            }
+                            share.setMovie(chapter.episodes[share.currentMovie.id])
+                            movieViewModel.setMovie(share.currentMovie)
                         }
                     )
             }
@@ -151,20 +163,23 @@ fun MovieSingleScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            ChatSection()
+            ChatSection(share.currentMovie, movieViewModel, share)
 
         }
 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun ChatSection() {
+fun ChatSection(movie: Movie, vm: MovieViewModel, share: SharedViewModel) {
 
     var value by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+//    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val messageList by vm.chatList.collectAsState(share.currentMovie.chatList)
 
 
     Box(Modifier.fillMaxSize()) {
@@ -173,7 +188,7 @@ fun ChatSection() {
 
             LazyColumn(
                 reverseLayout = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 state = listState
             ) {
 
@@ -197,7 +212,7 @@ fun ChatSection() {
                                 textDirection = TextDirection.ContentOrRtl
                             ),
                             colors = TextFieldDefaults.textFieldColors(
-                                textColor = MaterialTheme.colorScheme.onPrimary,
+                                textColor = MaterialTheme.colorScheme.onSecondary,
                                 containerColor = MaterialTheme.colorScheme.background,
                                 unfocusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
                                 unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
@@ -206,7 +221,14 @@ fun ChatSection() {
                             ),
                             trailingIcon = {
                                 IconButton(
-                                    onClick = { value = "ok" }
+                                    onClick = {
+                                        value = value.trim()
+                                        if (value != "") {
+                                            vm.addMessage(value)
+                                            value = ""
+                                        }
+//                                        keyboardController!!.hide()
+                                    }
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.baseline_send_24),
@@ -220,69 +242,70 @@ fun ChatSection() {
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.commentPlaceHolder),
-                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                                    color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f)
                                 )
                             })
                     }
 
                 }
 
-                items(20) {
-                    ShowChats(20 - it)
+                items(messageList.size) { index ->
+                    ShowChats(messageList[index])
                 }
             }
-
-
         }
 
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            IconButton(
-                onClick = {
-                    coroutineScope.launch {
-                        listState.animateScrollToItem(0)
-                    }
-                },
-                modifier = Modifier.padding(bottom = 50.dp, start = 20.dp, end = 20.dp)
-            ) {
 
-                if (listState.firstVisibleItemIndex > 0) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_arrow_downward_24),
-                        contentDescription = "down",
-                        modifier = Modifier
-                            .size(70.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
-                            .padding(8.dp),
-                        tint = MaterialTheme.colorScheme.onSecondary,
-                    )
+    }
+
+    Row(
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        IconButton(
+            onClick = {
+                coroutineScope.launch {
+                    listState.animateScrollToItem(0)
                 }
+            },
+            modifier = Modifier.padding(bottom = 50.dp, start = 20.dp, end = 20.dp)
+        ) {
+
+            if (listState.firstVisibleItemIndex > 0) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_arrow_downward_24),
+                    contentDescription = "down",
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
+                        .padding(8.dp),
+                    tint = MaterialTheme.colorScheme.onSecondary,
+                )
             }
         }
     }
-
-
-}
-
-
-@Composable
-fun ShowChats(it: Int) {
-
-    MessageCard("mahdi $it") {}
 }
 
 @Composable
-fun MessageCard(text: String, onClick: () -> Unit) {
+fun ShowChats(chat: Chat) {
+
+    MessageCard(chat) {}
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun MessageCard(chat: Chat, onClick: () -> Unit) {
+
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
 //    todo-> change rounded corner and card when user is the owner of the comment
     Row(modifier = Modifier.padding(1.dp, 0.dp)) {
         Text(
-            text = "Mahdi Rahmani",
-            modifier = Modifier.padding(25.dp, 0.dp),
+            text = chat.owner,
+            modifier = Modifier
+                .padding(25.dp, 0.dp),
             color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
             style = MaterialTheme.typography.bodySmall.copy(
                 fontSize = 8.sp,
@@ -295,9 +318,15 @@ fun MessageCard(text: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(start = 25.dp, bottom = 1.dp, end = 80.dp, top = 8.dp)
-            .wrapContentWidth(),
+            .wrapContentWidth()
+            .combinedClickable(
+                onClick={},
+                onLongClick = {
+                    clipboardManager.setText(AnnotatedString(chat.text))
+                }
+            ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondary,
+            containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
             contentColor = MaterialTheme.colorScheme.onSecondary,
         ),
         shape = RoundedCornerShape(
@@ -311,9 +340,10 @@ fun MessageCard(text: String, onClick: () -> Unit) {
         Column(horizontalAlignment = Alignment.End) {
 
             Text(
-                text = text,
+                text = chat.text,
                 style = MaterialTheme.typography.bodySmall.copy(
-                    textAlign = TextAlign.Justify
+                    textAlign = TextAlign.Justify,
+                    textDirection = TextDirection.ContentOrRtl
                 ),
                 modifier = Modifier.padding(16.dp, 5.dp)
             )
@@ -324,7 +354,7 @@ fun MessageCard(text: String, onClick: () -> Unit) {
                     .wrapContentWidth(), horizontalArrangement = Arrangement.End
             ) {
                 Text(
-                    text = "23:58",
+                    text = chat.time,
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 6.sp)
                 )
             }

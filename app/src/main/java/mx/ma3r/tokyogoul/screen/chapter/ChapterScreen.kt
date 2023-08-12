@@ -64,38 +64,7 @@ fun ChapterScreen(navController: NavHostController, chapter: Chapter, share: Sha
                 .padding(paddingValues.apply { 1.dp })
         ) {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(260.dp)
-                    .padding(15.dp)
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(MaterialTheme.colorScheme.tertiary),
-                contentAlignment = Alignment.BottomStart
-            ) {
-
-                IconButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxSize()) {
-                    Icon(
-                        painterResource(id = R.drawable.baseline_play_circle_outline_24),
-                        "play",
-                        tint = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.size(60.dp)
-                    )
-                }
-
-                Text(
-                    text = stringResource(id = R.string.trailer) + " $chapterName",
-                    modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .padding(12.dp, 5.dp),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontStyle = FontStyle.Italic,
-                    color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
-                )
-
-            }
-
-            MovieLazyCol(navController, share)
+            MovieLazyCol(navController, share,chapterName)
         }
     }
 
@@ -107,6 +76,7 @@ fun ChapterScreen(navController: NavHostController, chapter: Chapter, share: Sha
 fun MovieLazyCol(
     navController: NavController,
     share: SharedViewModel,
+    chapterName:String
 ) {
 
 
@@ -115,6 +85,11 @@ fun MovieLazyCol(
             .fillMaxSize()
             .padding(10.dp, 5.dp)
     ) {
+
+        item {
+            VideoSection(chapterName)
+        }
+
         items(share.currentChapter.episodes.size) { index ->
 
             Card(modifier = Modifier
@@ -136,4 +111,41 @@ fun MovieLazyCol(
         }
     }
 
+}
+
+@Composable
+fun VideoSection(chapterName:String){
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(260.dp)
+            .padding(15.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(MaterialTheme.colorScheme.tertiary),
+        contentAlignment = Alignment.BottomStart
+    ) {
+
+
+        IconButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxSize()) {
+            Icon(
+                painterResource(id = R.drawable.baseline_play_circle_outline_24),
+                "play",
+                tint = MaterialTheme.colorScheme.onSecondary,
+                modifier = Modifier.size(60.dp)
+            )
+        }
+
+        Text(
+            text = stringResource(id = R.string.trailer) + " $chapterName",
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(12.dp, 5.dp),
+            style = MaterialTheme.typography.titleSmall,
+            fontStyle = FontStyle.Italic,
+            color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
+        )
+
+    }
 }

@@ -76,5 +76,7 @@ dependencies {
     implementation ("io.insert-koin:koin-androidx-navigation:$koin_version")
     implementation ("io.insert-koin:koin-androidx-compose:3.4.5")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
 
 }

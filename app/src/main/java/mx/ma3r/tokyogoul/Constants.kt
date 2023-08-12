@@ -21,17 +21,17 @@ val CHAPTERS = listOf(
         R.string.ch1,
         listOf(
             movie,
-            movie.copy(name = "S01E02", id = 2),
-            movie.copy(name = "S01E03", id = 3),
-            movie.copy(name = "S01E04", id = 4),
-            movie.copy(name = "S01E05", id = 5),
-            movie.copy(name = "S01E06", id = 6),
-            movie.copy(name = "S01E07", id = 7),
-            movie.copy(name = "S01E08", id = 8),
-            movie.copy(name = "S01E09", id = 9),
-            movie.copy(name = "S01E010", id = 10),
-            movie.copy(name = "S01E011", id = 11),
-            movie.copy(name = "S01E012", id = 12),
+            movie.copy(name = "S01E02", id = 2, chatList = ArrayList()),
+            movie.copy(name = "S01E03", id = 3, chatList = ArrayList()),
+            movie.copy(name = "S01E04", id = 4, chatList = ArrayList()),
+            movie.copy(name = "S01E05", id = 5, chatList = ArrayList()),
+            movie.copy(name = "S01E06", id = 6, chatList = ArrayList()),
+            movie.copy(name = "S01E07", id = 7, chatList = ArrayList()),
+            movie.copy(name = "S01E08", id = 8, chatList = ArrayList()),
+            movie.copy(name = "S01E09", id = 9, chatList = ArrayList()),
+            movie.copy(name = "S01E010", id = 10, chatList = ArrayList()),
+            movie.copy(name = "S01E011", id = 11, chatList = ArrayList()),
+            movie.copy(name = "S01E012", id = 12, chatList = ArrayList()),
         )
     ),
     Chapter(2, R.string.ch2, listOf(movie, movie, movie, movie, movie, movie, movie)),
@@ -40,13 +40,17 @@ val CHAPTERS = listOf(
 )
 
 @Composable
-fun Background(){
+fun Background(alpha: Float = 0.8f, img: Int = R.drawable.bg_home) {
     Image(
-        painter = painterResource(id = R.drawable.bg_home),
+        painter = painterResource(id = img),
         contentDescription = "bg",
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize()
     )
-    Spacer(modifier = Modifier.background(MaterialTheme.colorScheme.background.copy(0.8f)).fillMaxSize())
+    Spacer(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background.copy(alpha = alpha))
+            .fillMaxSize()
+    )
 
 }
