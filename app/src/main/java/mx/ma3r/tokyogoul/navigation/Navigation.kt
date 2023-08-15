@@ -77,5 +77,18 @@ fun Navigation(
         }
         composable(Screen.ChatSection.route) {
         }
+
+
+
+        composable(Screen.AboutTokyoGhoul.route) {
+        }
+        composable(Screen.AboutUs.route) {
+        }
+        composable(Screen.DownloadedFiles.route) {
+        }
+        composable(Screen.ContactUs.route) {
+        }
+
+
     }
 }

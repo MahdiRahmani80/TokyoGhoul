@@ -16,4 +16,10 @@
     <string name="web_client_id">725463098019-b868lfifdc1nbe1bolork45re1ijntii.apps.googleusercontent.com</string>
     <string name="check_VPN">Check your VPN</string>
     <string name="login_successful">"Login is successful "</string>
+    <string name="aboutTokyoGhoul">About Tokyo Goul</string>
+    <string name="aboutUs">About us</string>
+    <string name="downloadedFiles">Downloaded files</string>
+    <string name="contactUs">Contact us</string>
+    <string name="gallery">Gallery</string>
+    <string name="donate">Donate Us</string>
 </resources>

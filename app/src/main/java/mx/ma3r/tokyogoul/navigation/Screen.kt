@@ -9,4 +9,9 @@ sealed class Screen(val route:String){
     object Movie:Screen("movie_screen")
     object Chapter:Screen("chapter_screen")
     object Gallery:Screen("gallery_screen")
+    object AboutTokyoGhoul:Screen("about_tokyo_ghoul_screen")
+    object AboutUs:Screen("about_screen")
+    object DownloadedFiles:Screen("downloaded_screen")
+    object ContactUs:Screen("contact_screen")
+    object Donate:Screen("donate_screen")
 }

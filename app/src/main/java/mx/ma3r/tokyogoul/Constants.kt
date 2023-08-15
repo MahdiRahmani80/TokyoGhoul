@@ -10,9 +10,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import mx.ma3r.tokyogoul.model.Chapter
+import mx.ma3r.tokyogoul.model.HomeFeature
 import mx.ma3r.tokyogoul.model.Movie
+import mx.ma3r.tokyogoul.navigation.Screen
 
 const val DELAY_SPLASH_SCREEN = 2800L
+
+val HOME_FEATURES = listOf(
+    HomeFeature(R.string.aboutTokyoGhoul,R.drawable.baseline_movie_24,Screen.AboutTokyoGhoul),
+    HomeFeature(R.string.aboutUs,R.drawable.baseline_engineering_24,Screen.AboutUs),
+    HomeFeature(R.string.downloadedFiles,R.drawable.baseline_cloud_download_24,Screen.DownloadedFiles),
+    HomeFeature(R.string.contactUs, R.drawable.baseline_phone_enabled_24,Screen.ContactUs),
+    HomeFeature(R.string.donate, R.drawable.baseline_wifi_protected_setup_24,Screen.Donate),
+//    HomeFeature(R.string.gallery,R.drawable.poster1,Screen.Gallery),
+)
 
 val movie = Movie(1, "S01E01", "https://...")
 val CHAPTERS = listOf(

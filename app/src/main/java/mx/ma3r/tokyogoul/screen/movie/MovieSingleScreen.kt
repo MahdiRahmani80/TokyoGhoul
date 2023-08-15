@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -86,7 +88,7 @@ fun MovieSingleScreen(
     LaunchedEffect(key1 = state.signInError) {
         state.signInError?.let { err ->
             Log.e("SignInError", err)
-            Toast.makeText( context, context.getText(R.string.check_VPN),Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getText(R.string.check_VPN), Toast.LENGTH_LONG).show()
         }
     }
     val movieViewModel = koinViewModel<MovieViewModel>()
@@ -174,7 +176,15 @@ fun MovieSingleScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            ChatSection(navController,share.currentMovie, movieViewModel, share, onSignInClick, state,userData)
+            ChatSection(
+                navController,
+                share.currentMovie,
+                movieViewModel,
+                share,
+                onSignInClick,
+                state,
+                userData
+            )
 
         }
 
@@ -213,7 +223,7 @@ fun ChatSection(
                 item {
 
 
-                    if (userData!=null) {
+                    if (userData != null) {
                         Box(
                             contentAlignment = Alignment.BottomCenter, modifier = Modifier
                                 .padding(15.dp)
@@ -269,10 +279,28 @@ fun ChatSection(
 
                     } else {
 
-                        Button(modifier = Modifier.fillMaxWidth(), onClick = {
-                            onSignInClick()
-                        }) {
-                            Text(text = "SignIn ${state.isSignInSuccessful}")
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onBackground,
+                            ), modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(45.dp, 30.dp), onClick = {
+                                onSignInClick()
+                            }) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "SignIn",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(3.dp),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                            }
                         }
                     }
                 }
