@@ -11,4 +11,9 @@
     <string name="commentPlaceHolder">Leave a message</string>
     <string name="lastEpisode">Last Episode</string>
     <string name="nextEpisode">Next Episode</string>
+
+
+    <string name="web_client_id">725463098019-b868lfifdc1nbe1bolork45re1ijntii.apps.googleusercontent.com</string>
+    <string name="check_VPN">Check your VPN</string>
+    <string name="login_successful">"Login is successful "</string>
 </resources>

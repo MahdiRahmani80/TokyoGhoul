@@ -2,7 +2,9 @@ package mx.ma3r.tokyogoul.di
 
 import android.app.Application
 import androidx.lifecycle.viewmodel.compose.viewModel
+import mx.ma3r.tokyogoul.MainViewModel
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
+import mx.ma3r.tokyogoul.persentation.signIn.SignInViewModel
 import mx.ma3r.tokyogoul.screen.home.HomeViewModel
 import mx.ma3r.tokyogoul.screen.movie.MovieViewModel
 import org.koin.android.ext.koin.androidContext
@@ -19,6 +21,7 @@ class App:Application() {
 
             viewModel{ HomeViewModel()}
             viewModel { MovieViewModel() }
+            single { SignInViewModel() }
             single{ SharedViewModel()}
         }
 

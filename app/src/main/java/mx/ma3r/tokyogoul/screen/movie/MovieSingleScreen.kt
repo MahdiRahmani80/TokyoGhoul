@@ -1,12 +1,12 @@
 package mx.ma3r.tokyogoul.screen.movie
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,10 +45,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -57,8 +57,6 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mx.ma3r.tokyogoul.Background
 import mx.ma3r.tokyogoul.R
@@ -67,21 +65,34 @@ import mx.ma3r.tokyogoul.model.Chat
 import mx.ma3r.tokyogoul.model.Movie
 import mx.ma3r.tokyogoul.navigation.Screen
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
+import mx.ma3r.tokyogoul.persentation.signIn.SignInState
+import mx.ma3r.tokyogoul.persentation.signIn.UserData
 import mx.ma3r.tokyogoul.screen.home.TopBar
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.scope.ScopeID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieSingleScreen(
     navController: NavController,
     chapter: Chapter,
-    share: SharedViewModel
+    share: SharedViewModel,
+    state: SignInState,
+    userData: UserData?,
+    onSignInClick: () -> Unit
 ) {
 
+    val context = LocalContext.current
+    LaunchedEffect(key1 = state.signInError) {
+        state.signInError?.let { err ->
+            Log.e("SignInError", err)
+            Toast.makeText( context, context.getText(R.string.check_VPN),Toast.LENGTH_LONG).show()
+        }
+    }
     val movieViewModel = koinViewModel<MovieViewModel>()
 
     movieViewModel.setMovie(share.currentMovie)
-    val coroutineScope = rememberCoroutineScope()
+//    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(topBar = { TopBar() }) { paddingValues ->
 
@@ -163,7 +174,7 @@ fun MovieSingleScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            ChatSection(share.currentMovie, movieViewModel, share)
+            ChatSection(navController,share.currentMovie, movieViewModel, share, onSignInClick, state,userData)
 
         }
 
@@ -172,7 +183,15 @@ fun MovieSingleScreen(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun ChatSection(movie: Movie, vm: MovieViewModel, share: SharedViewModel) {
+fun ChatSection(
+    navController: NavController,
+    movie: Movie,
+    vm: MovieViewModel,
+    share: SharedViewModel,
+    onSignInClick: () -> Unit,
+    state: SignInState,
+    userData: UserData?
+) {
 
     var value by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
@@ -180,7 +199,6 @@ fun ChatSection(movie: Movie, vm: MovieViewModel, share: SharedViewModel) {
 //    val keyboardController = LocalSoftwareKeyboardController.current
 
     val messageList by vm.chatList.collectAsState(share.currentMovie.chatList)
-
 
     Box(Modifier.fillMaxSize()) {
 
@@ -192,61 +210,71 @@ fun ChatSection(movie: Movie, vm: MovieViewModel, share: SharedViewModel) {
                 state = listState
             ) {
 
-                item() {
+                item {
 
-                    Box(
-                        contentAlignment = Alignment.BottomCenter, modifier = Modifier
-                            .padding(15.dp)
-                            .clip(RoundedCornerShape(14.dp))
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.secondary,
-                                RoundedCornerShape(10.dp)
-                            )
-                    ) {
 
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = value,
-                            textStyle = MaterialTheme.typography.bodyLarge.copy(
-                                textDirection = TextDirection.ContentOrRtl
-                            ),
-                            colors = TextFieldDefaults.textFieldColors(
-                                textColor = MaterialTheme.colorScheme.onSecondary,
-                                containerColor = MaterialTheme.colorScheme.background,
-                                unfocusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
-                                unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
-                                unfocusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
-                                unfocusedSupportingTextColor = MaterialTheme.colorScheme.tertiary,
-                            ),
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        value = value.trim()
-                                        if (value != "") {
-                                            vm.addMessage(value)
-                                            value = ""
-                                        }
-//                                        keyboardController!!.hide()
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.baseline_send_24),
-                                        contentDescription = "send",
-                                        tint = MaterialTheme.colorScheme.secondary,
-                                        modifier = Modifier.size(28.dp)
-                                    )
-                                }
-                            },
-                            onValueChange = { value = it },
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.commentPlaceHolder),
-                                    color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f)
+                    if (userData!=null) {
+                        Box(
+                            contentAlignment = Alignment.BottomCenter, modifier = Modifier
+                                .padding(15.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .border(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.secondary,
+                                    RoundedCornerShape(10.dp)
                                 )
-                            })
-                    }
+                        ) {
 
+                            OutlinedTextField(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = value,
+                                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                                    textDirection = TextDirection.ContentOrRtl
+                                ),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    textColor = MaterialTheme.colorScheme.onSecondary,
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    unfocusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
+                                    unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.tertiary,
+                                    unfocusedSupportingTextColor = MaterialTheme.colorScheme.tertiary,
+                                ),
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            value = value.trim()
+                                            if (value != "") {
+                                                vm.addMessage(value)
+                                                value = ""
+                                            }
+//                                        keyboardController!!.hide()
+                                        }
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.baseline_send_24),
+                                            contentDescription = "send",
+                                            tint = MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.size(28.dp)
+                                        )
+                                    }
+                                },
+                                onValueChange = { value = it },
+                                placeholder = {
+                                    Text(
+                                        text = stringResource(R.string.commentPlaceHolder),
+                                        color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f)
+                                    )
+                                })
+                        }
+
+                    } else {
+
+                        Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                            onSignInClick()
+                        }) {
+                            Text(text = "SignIn ${state.isSignInSuccessful}")
+                        }
+                    }
                 }
 
                 items(messageList.size) { index ->
@@ -320,7 +348,7 @@ fun MessageCard(chat: Chat, onClick: () -> Unit) {
             .padding(start = 25.dp, bottom = 1.dp, end = 80.dp, top = 8.dp)
             .wrapContentWidth()
             .combinedClickable(
-                onClick={},
+                onClick = {},
                 onLongClick = {
                     clipboardManager.setText(AnnotatedString(chat.text))
                 }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.NotificationCompat.MessagingStyle.Message
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 class MovieViewModel : ViewModel() {
+
 
     private val _movie = MutableStateFlow(Movie(0,"",""))
 
@@ -44,5 +46,6 @@ class MovieViewModel : ViewModel() {
             _movie.emit(_movie.value.copy(chatList = ArrayList(updateChatList)))
         }
     }
+
 
 }
