@@ -38,6 +38,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,13 +66,11 @@ import mx.ma3r.tokyogoul.R
 import mx.ma3r.tokyogoul.model.Chapter
 import mx.ma3r.tokyogoul.model.Chat
 import mx.ma3r.tokyogoul.model.Movie
-import mx.ma3r.tokyogoul.navigation.Screen
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
 import mx.ma3r.tokyogoul.persentation.signIn.SignInState
 import mx.ma3r.tokyogoul.persentation.signIn.UserData
-import mx.ma3r.tokyogoul.screen.home.TopBar
+import mx.ma3r.tokyogoul.utility.view.TopBar
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.scope.ScopeID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -177,12 +176,10 @@ fun MovieSingleScreen(
             )
 
             ChatSection(
-                navController,
                 share.currentMovie,
                 movieViewModel,
                 share,
                 onSignInClick,
-                state,
                 userData
             )
 
@@ -194,12 +191,10 @@ fun MovieSingleScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ChatSection(
-    navController: NavController,
     movie: Movie,
     vm: MovieViewModel,
     share: SharedViewModel,
     onSignInClick: () -> Unit,
-    state: SignInState,
     userData: UserData?
 ) {
 
@@ -328,7 +323,9 @@ fun ChatSection(
             modifier = Modifier.padding(bottom = 50.dp, start = 20.dp, end = 20.dp)
         ) {
 
-            if (listState.firstVisibleItemIndex > 0) {
+            val _list_state by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+
+            if ( _list_state > 0) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_arrow_downward_24),
                     contentDescription = "down",
@@ -376,7 +373,7 @@ fun MessageCard(chat: Chat, onClick: () -> Unit) {
             .padding(start = 25.dp, bottom = 1.dp, end = 80.dp, top = 8.dp)
             .wrapContentWidth()
             .combinedClickable(
-                onClick = {},
+                onClick = { onClick() },
                 onLongClick = {
                     clipboardManager.setText(AnnotatedString(chat.text))
                 }

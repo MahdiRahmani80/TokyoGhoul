@@ -36,7 +36,7 @@ import mx.ma3r.tokyogoul.R
 import mx.ma3r.tokyogoul.model.Chapter
 import mx.ma3r.tokyogoul.navigation.Screen
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
-import mx.ma3r.tokyogoul.screen.home.HomeViewModel
+import mx.ma3r.tokyogoul.utility.view.TopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,17 +44,7 @@ fun ChapterScreen(navController: NavHostController, chapter: Chapter, share: Sha
 
     val chapterName = stringResource(chapter.name)
 
-    Scaffold(topBar = {
-
-        Text(
-            text = chapterName,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-            style = MaterialTheme.typography.titleLarge
-        )
-
-    }) { paddingValues ->
+    Scaffold(topBar = { TopBar(chapterName) }) { paddingValues ->
 
         Background()
 
@@ -64,7 +54,7 @@ fun ChapterScreen(navController: NavHostController, chapter: Chapter, share: Sha
                 .padding(paddingValues.apply { 1.dp })
         ) {
 
-            MovieLazyCol(navController, share,chapterName)
+            MovieLazyCol(navController, share, chapterName)
         }
     }
 
@@ -76,7 +66,7 @@ fun ChapterScreen(navController: NavHostController, chapter: Chapter, share: Sha
 fun MovieLazyCol(
     navController: NavController,
     share: SharedViewModel,
-    chapterName:String
+    chapterName: String
 ) {
 
 
@@ -114,7 +104,7 @@ fun MovieLazyCol(
 }
 
 @Composable
-fun VideoSection(chapterName:String){
+fun VideoSection(chapterName: String) {
 
 
     Box(

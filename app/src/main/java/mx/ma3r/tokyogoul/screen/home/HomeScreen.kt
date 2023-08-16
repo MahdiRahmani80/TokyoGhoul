@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import mx.ma3r.tokyogoul.Background
 import mx.ma3r.tokyogoul.R
 import mx.ma3r.tokyogoul.navigation.Screen
 import mx.ma3r.tokyogoul.navigation.SharedViewModel
+import mx.ma3r.tokyogoul.utility.view.TopBar
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,35 +52,9 @@ fun HomeScreen(navController: NavController, share: SharedViewModel) {
 
     Scaffold(topBar = { TopBar() }) { paddingValues ->
 
-        Background()
+        Background(alpha = 0.7f)
         LazyCol(navController, homeViewModel, share, paddingValues)
 
-    }
-}
-
-@Composable
-fun TopBar() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .padding(15.dp)
-    ) {
-
-        Text(
-            text = stringResource(id = R.string.app_name),
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        IconButton(onClick = { /*TODO CaffeBazaar intent: Star app */ }) {
-            Icon(
-                painterResource(id = R.drawable.baseline_star_24),
-                contentDescription = "star",
-                tint = Color(0xFFFFC107)
-            )
-        }
     }
 }
 
@@ -171,9 +147,12 @@ fun LastVideoPlayed(
             contentAlignment = Alignment.BottomStart
         ) {
 
-            Background(img=R.drawable.home_video_bg, alpha = 0.4f)
+            Background(img = R.drawable.home_video_bg, alpha = 0.4f)
 
-            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxSize()) {
+            IconButton(
+                onClick = { /*TODO -> Show Last Movie Played */ },
+                modifier = Modifier.fillMaxSize()
+            ) {
                 Icon(
                     painterResource(id = R.drawable.baseline_play_circle_outline_24),
                     "play",
